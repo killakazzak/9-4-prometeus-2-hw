@@ -14,10 +14,36 @@ wget https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertm
 tar xvfz alertmanager-0.27.0.linux-386.tar.gz
 cd alertmanager-0.27.0.linux-386
 ```
+Устанавливаем Alertmanager
 ```
 cp alertmanager /usr/local/bin/
 cp amtool /usr/local/bin/
+cp alertmanager.yml /etc/prometheus/
+chown -R prometheus:prometheus /etc/prometheus/alertmanager.yml
 ```
+Создаем сервис
+```
+vim /etc/systemd/system/prometheus-alertmanager.service
+[Unit]
+Description=Alertmanager Service Denis Ten
+After=network.target
+[Service]
+EnvironmentFile=-/etc/default/alertmanager
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/alertmanager --config.file=/etc/prometheus/alertmanager.yml --storage.path=/var/lib/prometheus/alertmanager $ARGS
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
+```
+Запускаем и проверяем службу
+systemctl daemon-reload
+systemctl status  prometheus-alertmanager.service
+![image](https://github.com/killakazzak/hw-prometeus-02/assets/32342205/9ac056f7-8e23-4034-8ef1-f21145893809)
+
+
 
 ---
 
