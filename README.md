@@ -147,6 +147,67 @@ systemctl stop node-exporter.service
 ### Требования к результату
 - [ ] приложите скриншот браузера с открытым эндпоинтом, а также скриншот списка таргетов из интерфейса Prometheus.*
 
+### Решение Задание 3*
+
+Устанавливаем Docker
+```
+apt-get install ca-certificates curl gnupg lsb-release -y
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bullseye stable" > /etc/apt/sources.list.d/docker.list
+apt update
+apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+systemctl enable --now docker
+systemctl status docker
+```
+![image](https://github.com/killakazzak/hw-prometeus-02/assets/32342205/28ec4dc4-021f-47dc-95b9-32abd90ad8a2)
+
+Настройка Docker для мониторинга
+
+```
+vim /etc/docker/daemon.json
+```
+```
+{
+"metrics-addr" : "ip_нашего_сервера:9323",
+"experimental" : true
+}
+```
+Проверяем
+
+```
+systemctl restart docker && systemctl status docker
+```
+Добавляем эндпоинт Docker в Prometheus
+```
+vim /etc/prometheus/prometheus.yml
+```
+```
+---
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - localhost:9093
+rule_files:
+  - tenda-alert.yml
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+          - localhost:9100
+          - 10.159.86.111:9323
+```
+![image](https://github.com/killakazzak/hw-prometeus-02/assets/32342205/5aed6afc-9128-4e36-b31a-ea10087bd70c)
+
+![image](https://github.com/killakazzak/hw-prometeus-02/assets/32342205/fecd0d6d-dfb6-4561-b7f8-b7999948606e)
+
+
+
 ---
 
 ### Задание 4* со звездочкой 
