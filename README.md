@@ -7,6 +7,18 @@
 ### Требования к результату
 - [ ] Погасите node exporter, стоящий на мониторинге, и прикрепите скриншот раздела оповещений Prometheus, где оповещение будет в статусе Pending
 
+
+Скачиваем и распаковывываем последнюю версию alertmanager
+```
+wget https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-386.tar.gz
+tar xvfz alertmanager-0.27.0.linux-386.tar.gz
+cd alertmanager-0.27.0.linux-386
+```
+```
+cp alertmanager /usr/local/bin/
+cp amtool /usr/local/bin/
+```
+
 ---
 
 ### Задание 2*
